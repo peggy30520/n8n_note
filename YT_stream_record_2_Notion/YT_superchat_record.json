@@ -1,0 +1,389 @@
+{
+  "name": "YT_superchat_record",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "yt_superchat_record",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1504,
+        -48
+      ],
+      "id": "ada92ed7-09d3-4ebd-a212-8a6269c3e8f2",
+      "name": "Webhook",
+      "webhookId": "d9c1b3e1-46e5-4584-ba70-8956633c1f2c"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe95260e-1a69-4fdd-9f28-82eb9ed48c36",
+              "name": "body",
+              "value": "={{ $json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1264,
+        -48
+      ],
+      "id": "c7169ff5-fc92-47f8-9ae1-dafa22c0b5e1",
+      "name": "Get json data from local Python"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/videos",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": ""
+            },
+            {
+              "name": "part",
+              "value": "snippet"
+            },
+            {
+              "name": "id",
+              "value": "={{ $json.body.video_url.split('v=')[1].split('&')[0] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1024,
+        -48
+      ],
+      "id": "563436ed-8d17-4686-82f2-1fb8b002468e",
+      "name": "Get video info from YT"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7d07e843-f2f3-462e-9e8d-2ece4c707f29",
+              "name": "items[0].snippet.title",
+              "value": "={{ $json.items[0].snippet.title }}",
+              "type": "string"
+            },
+            {
+              "id": "046fd0ef-3a59-4263-8aff-11143223491a",
+              "name": "items[0].snippet.publishedAt",
+              "value": "={{ $json.items[0].snippet.publishedAt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -848,
+        -48
+      ],
+      "id": "03dc98d9-26eb-4645-875e-f2d4eeaddc6d",
+      "name": "Get video title and published date"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/channels",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": ""
+            },
+            {
+              "name": "part",
+              "value": "statistics"
+            },
+            {
+              "name": "id",
+              "value": ""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1264,
+        144
+      ],
+      "id": "314e48c8-9f63-4752-a4f3-06043a71309f",
+      "name": "Get YT channel info"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "147801e4-4312-45ea-a3db-291d79015815",
+              "name": "items[0].statistics.viewCount",
+              "value": "={{ $json.items[0].statistics.viewCount }}",
+              "type": "string"
+            },
+            {
+              "id": "5025c1ca-23da-45df-b38e-75c13a9823ec",
+              "name": "items[0].statistics.subscriberCount",
+              "value": "={{ $json.items[0].statistics.subscriberCount }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1024,
+        144
+      ],
+      "id": "4013523e-a5b4-42f3-8b37-a46b82359c3f",
+      "name": "Get channel view count and subscribers' count"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -1264,
+        288
+      ],
+      "id": "6cc07676-4d52-4b3e-b17f-59c39169eaba",
+      "name": "Get current date"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 4,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -592,
+        208
+      ],
+      "id": "79adb70d-478c-4a0a-993f-d9d9f343cde7",
+      "name": "merge all info (certain topic)"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "2fbf8dfb-481e-80d5-80b7-f762e8f46ee7",
+          "mode": "list",
+          "cachedResultName": "YT_stream_record_DEMO",
+          "cachedResultUrl": ""
+        },
+        "title": "={{ $json.items[0].snippet.title }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "New member|number",
+              "numberValue": "={{ $json.body.new_member }}"
+            },
+            {
+              "key": "Old member|number",
+              "numberValue": "={{ $json.body.old_member }}"
+            },
+            {
+              "key": "Published Date|date",
+              "date": "={{ $json.items[0].snippet.publishedAt.split('T')[0] }}",
+              "timezone": "Asia/Taipei"
+            },
+            {
+              "key": "SC amo|number",
+              "numberValue": "={{ $json.body.sc_amoount }}"
+            },
+            {
+              "key": "Stream url|url",
+              "urlValue": "={{ $json.body.video_url }}"
+            },
+            {
+              "key": "Update Date|date",
+              "date": "={{ $json.currentDate.split('T')[0] }}",
+              "timezone": "Asia/Taipei"
+            },
+            {
+              "key": "SC cnt|number",
+              "numberValue": "={{ $json.body.sc_count }}"
+            },
+            {
+              "key": "Subscribers|number",
+              "numberValue": "={{ parseInt($json.items[0].statistics.subscriberCount) }}"
+            },
+            {
+              "key": "Total view cnt|number",
+              "numberValue": "={{ parseInt($json.items[0].statistics.viewCount) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -416,
+        240
+      ],
+      "id": "a242a087-02f8-4a1c-aae1-837978a9aecf",
+      "name": "Create a database page at Notion",
+      "credentials": {
+        "notionApi": {
+          "id": "RcNP1dJx2P2ObOKN",
+          "name": "Notion demo"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get json data from local Python",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get YT channel info",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get current date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get json data from local Python": {
+      "main": [
+        [
+          {
+            "node": "Get video info from YT",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "merge all info (certain topic)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get video info from YT": {
+      "main": [
+        [
+          {
+            "node": "Get video title and published date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get video title and published date": {
+      "main": [
+        [
+          {
+            "node": "merge all info (certain topic)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get YT channel info": {
+      "main": [
+        [
+          {
+            "node": "Get channel view count and subscribers' count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get channel view count and subscribers' count": {
+      "main": [
+        [
+          {
+            "node": "merge all info (certain topic)",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Get current date": {
+      "main": [
+        [
+          {
+            "node": "merge all info (certain topic)",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "merge all info (certain topic)": {
+      "main": [
+        [
+          {
+            "node": "Create a database page at Notion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page at Notion": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Taipei",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "b41bbd9c-5f72-4e4e-81b7-ea875369c4b2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7702bea2b1c18f1bb2108d540e5d2df5c7fb44bf5a69b2e7f048564d1d4fd600"
+  },
+  "id": "5UaB4akikLwhZkEi",
+  "tags": []
+}
