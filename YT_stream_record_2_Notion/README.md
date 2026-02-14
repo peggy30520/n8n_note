@@ -128,16 +128,21 @@
             print(f"發生錯誤: {e}")
     ```
 1. 執行 .py，並確認workflow已取得資訊
-![image](https://hackmd.io/_uploads/H116cgMPbe.png)
-出現input()之後，記得先去執行workflow，表明n8n要開始監聽事件了。
-**注意**：在testing的階段只能監聽兩分鐘
-![image](https://hackmd.io/_uploads/S1OfOlfwbg.png)
-確認已在監聽狀態後，輸入y
-![image](https://hackmd.io/_uploads/rJ9ZjefP-e.png)
-有打勾就代表執行完成
-![image](https://hackmd.io/_uploads/rkhFslzD-g.png)
-點選Webhook node，可以確認拿到的資訊是否正確
-![image](https://hackmd.io/_uploads/SJyh2xGvbx.png)
+    ![image](https://hackmd.io/_uploads/H116cgMPbe.png)
+
+    出現input()之後，記得先去執行workflow，表明n8n要開始監聽事件了。
+
+    **注意**：在testing的階段只能監聽兩分鐘
+    ![image](https://hackmd.io/_uploads/S1OfOlfwbg.png)
+
+    確認已在監聽狀態後，輸入y
+    ![image](https://hackmd.io/_uploads/rJ9ZjefP-e.png)
+
+    有打勾就代表執行完成
+    ![image](https://hackmd.io/_uploads/rkhFslzD-g.png)
+
+    點選Webhook node，可以確認拿到的資訊是否正確
+    ![image](https://hackmd.io/_uploads/SJyh2xGvbx.png)
 
 ## Step 4：設計workflow，將資料匯入Notion
 Webhook後面的節點可以自由發揮，我自己還有另外抓的資料有：
@@ -145,7 +150,7 @@ Webhook後面的節點可以自由發揮，我自己還有另外抓的資料有�
 * 直接去找該YTR的相關Query，取得頻道瀏覽總次數及訂閱者數量
 * 紀錄上傳該筆資料的時間
 
-最後把所有的資訊整合起來，匯入Notion
+最後把所有的資訊整合起來，匯入Notion。若確認流程無誤可以把workflow publish，方便後續更新資料。
 
 ![image](https://hackmd.io/_uploads/By7qe-zDWl.png)
 
@@ -162,8 +167,19 @@ Webhook後面的節點可以自由發揮，我自己還有另外抓的資料有�
     * 成功後執行後，也會顯示上傳到Notion的成果(如箭頭的指向變化)
 ![image](https://hackmd.io/_uploads/HJcIDbGwWe.png)
 
+### Workflow publish
+完成測試之後，把workflow publish，並把python script裡面的webhook的url改成Production url後，就不用點進去workflow的editor點執行的按鈕，有開著n8n跟執行python就可以完成資料的蒐集。
+
+![image](https://hackmd.io/_uploads/SyFED96wZl.png)
+
+Production URL所在處
+![image](https://hackmd.io/_uploads/Hkk1_5pwbx.png)
+
+完成Publish之後，workflow總覽的地方，該workflow就會有這個綠色勾勾，表示它一直在等待資料傳入
+![image](https://hackmd.io/_uploads/BkNvu96vbe.png)
+
+
 ## Step 5：透過Notion Chart觀察數據
-將以上流程看是用手動trigger，或是偵測有新直播紀錄檔就抓網址然後trigger，之類的就可以完成資料的蒐集。(我個人不會一直開著電腦跑流程，所以還是手動trigger的部分，但不得不說也是少很多工了)
 
 最後，推薦可以在Notion額外開一個database page做統整(下稱Summary page)，這樣就可以保持原本的database的乾淨(?)，不用怕突然改到甚麼。
 在Notion裡面可以設定database page的link(紅框)，所以就可以把Summary page，link到 database page，專門呈現數據變化。
