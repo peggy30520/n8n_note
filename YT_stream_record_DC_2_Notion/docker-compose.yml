@@ -1,0 +1,29 @@
+services:
+  # 服務一：n8n(官方有提供image)
+  n8n:
+    image: n8nio/n8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: always
+
+  # 服務二：Python
+  discord-bot:
+    build: .  # 讀取Dockerfile來build
+    environment:
+      - DISCORD_TOKEN=<你的token>
+      # 在compose的狀況下，直接IP寫n8n就可以通了
+      - N8N_WEBHOOK_URL=http://n8n:5678/webhook/<Production url>
+    volumes:
+      # 掛載你存 JSON 的 Volume
+      - sc_json_data:/app/json
+    depends_on:
+      - n8n     # 確保n8n啟動後，bot才開始監聽
+    restart: always
+
+volumes:
+  n8n_data:
+    name: n8n_data
+  sc_json_data:
+    name: sc_json_data
